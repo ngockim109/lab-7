@@ -23,6 +23,8 @@ import logo from "../../../assets/images/logo.webp";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
 import useAuth from "../../../hooks/useAuth";
+import useLogout from "../../../hooks/useLogout";
+import useLocalStorage from "../../../hooks/useLocalStorage";
 const navLinks = [
   { id: "1", title: "Home", href: "/" },
   { id: "2", title: "News", href: "/news" },
@@ -71,6 +73,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 export default function Navigation({ theme, changeTheme }) {
   const { auth, setAuth } = useAuth();
+  const [persist] = useLocalStorage("persist", false);
+  const logout = useLogout();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -80,8 +84,8 @@ export default function Navigation({ theme, changeTheme }) {
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const themeNav = useTheme();
-  const handleLogout = () => {
-    setAuth({});
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
   const handleProfileMenuOpen = (event) => {
@@ -120,7 +124,7 @@ export default function Navigation({ theme, changeTheme }) {
   };
 
   const menuId = "primary-search-account-menu";
-  const renderMenu = auth?.email ? (
+  const renderMenu = persist ? (
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{

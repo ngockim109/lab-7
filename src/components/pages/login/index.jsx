@@ -9,15 +9,19 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import AuthContext from "../../../context/AuthProvider";
 import api from "../../../config/api";
 import useAuth from "../../../hooks/useAuth";
 import { useLocation, useNavigate } from "react-router-dom";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import useInput from "../../../hooks/useInput";
+import useToggle from "../../../hooks/useToggle";
 const Login = () => {
   const { auth, setAuth } = useAuth();
+  const [user, resetUser, userAttribs] = useInput("user", "");
+  const [check, toggleCheck] = useToggle("persist", false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
@@ -32,6 +36,9 @@ const Login = () => {
       email: "",
       password: "",
     },
+    handleChange: (e) => {
+      console.log(e.target.value);
+    },
 
     onSubmit: async (values) => {
       try {
@@ -40,7 +47,7 @@ const Login = () => {
           let role;
           const isTrue = response.data.some((element) => {
             if (
-              element.email === values.email &&
+              element.email === user &&
               element.password === values.password
             ) {
               role = element.role;
@@ -54,8 +61,12 @@ const Login = () => {
           }
           if (isTrue) {
             setAuth({ ...values, role });
-            console.log(auth);
-            navigate(from, { replace: true });
+            resetUser();
+            if (role === "admin") {
+              navigate("/movie-management");
+            } else {
+              navigate(from, { replace: true });
+            }
           }
           console.log(role);
           console.log(isTrue);
@@ -68,10 +79,10 @@ const Login = () => {
     },
 
     validationSchema: Yup.object({
-      email: Yup.string()
-        .email()
-        .required("Required.")
-        .typeError("Please enter a valid email"),
+      // email: Yup.string()
+      //   .email()
+      //   .required("Required.")
+      //   .typeError("Please enter a valid email"),
       password: Yup.string()
         .required("Required.")
         .typeError("Please enter a valid password!"),
@@ -79,19 +90,29 @@ const Login = () => {
   });
 
   return (
-    <Box>
+    <Box sx={{ margin: "auto 0" }}>
       <Container
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Card
           sx={{
-            height: 300,
             width: "50%",
             display: "flex",
+            flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            padding: "16px",
           }}
         >
+          <Typography
+            component="h2"
+            textAlign={"center"}
+            fontSize={"large"}
+            fontWeight={"bold"}
+            margin={"20px 0"}
+          >
+            Login
+          </Typography>
           <form
             onSubmit={formik.handleSubmit}
             style={{ display: "flex", flexDirection: "column" }}
@@ -102,9 +123,7 @@ const Login = () => {
               variant="filled"
               type="email"
               fullWidth
-              defaultValue=""
-              value={formik.values.email}
-              onChange={formik.handleChange}
+              {...userAttribs}
               sx={{ marginBottom: "10px" }}
             />
             {formik.errors.email && (
@@ -118,7 +137,6 @@ const Login = () => {
               type="password"
               variant="filled"
               fullWidth
-              defaultValue=""
               value={formik.values.password}
               onChange={formik.handleChange}
               sx={{ marginBottom: "10px" }}
@@ -128,6 +146,17 @@ const Login = () => {
                 {formik.errors.password}
               </Typography>
             )}
+            <div className="persistCheck">
+              <input
+                type="checkbox"
+                id="persist"
+                onChange={toggleCheck}
+                checked={check}
+              />
+              <label htmlFor="persist" style={{ marginLeft: "6px" }}>
+                Remember me
+              </label>
+            </div>
             <Button type="submit" variant="contained">
               Login
             </Button>

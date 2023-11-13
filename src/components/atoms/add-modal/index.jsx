@@ -443,6 +443,7 @@ export default function AddModal({
                       value={formik.values.name}
                       onChange={formik.handleChange}
                       sx={{ marginBottom: "10px" }}
+                      key={item.id}
                     />
                     {item.errorType && (
                       <Typography variant="caption" color="red">

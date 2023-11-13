@@ -13,9 +13,18 @@ import {
   Container,
   Typography,
 } from "@mui/material";
+import useLocalStorage from "../../../hooks/useLocalStorage";
+import api from "../../../config/api";
 
 const UserProfile = ({ user, setUser }) => {
+  const [userLocal] = useLocalStorage("user");
   const [profile, setProfile] = useState([]);
+  const getUserInformation = async () => {
+    const response = await api.get(`/users?email=${userLocal}`);
+    if (response.status === 200) {
+      setProfile(response.data[0]);
+    }
+  };
   useEffect(() => {
     if (user) {
       axios
@@ -29,30 +38,22 @@ const UserProfile = ({ user, setUser }) => {
           }
         )
         .then((res) => {
-          setProfile(res.data);
+          // setProfile(res.data);
         })
         .catch((err) => console.log(err));
     }
-  }, [user]);
-  const logOut = () => {
-    googleLogout();
-    setProfile(null);
-  };
-  const [authenticated, setauthenticated] = useState(null);
-  useEffect(() => {
-    const loggedInUser = localStorage.getItem("authenticated");
-    if (loggedInUser) {
-      console.log(loggedInUser);
-      console.log(authenticated);
-      setauthenticated(loggedInUser);
-    }
-  }, []);
+    getUserInformation();
+  }, [user, userLocal]);
+  console.log(userLocal);
+  console.log(profile);
+
   const rows = [
     { id: "1", name: "Email", value: profile.email },
     { id: "2", name: "Given Name", value: profile.given_name },
     { id: "3", name: "Family Name", value: profile.family_name },
     { id: "4", name: "Hd", value: profile.hd },
     { id: "5", name: "Locale", value: profile.locale },
+    { id: "6", name: "Role", value: profile.role },
   ];
   return (
     <>
