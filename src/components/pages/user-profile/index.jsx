@@ -56,72 +56,68 @@ const UserProfile = ({ user, setUser }) => {
   ];
   return (
     <>
-      {authenticated ? (
-        <Box
-          display={"flex"}
-          width={"100%"}
-          justifyContent={"center"}
-          flexDirection={"column"}
-          alignContent={"center"}
-          margin={"auto 0"}
-        >
-          <Container sx={{ width: "50%" }}>
-            <Card>
-              <Container
-                sx={{
-                  width: "160px",
-                  height: "160px",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 12,
-                }}
+      <Box
+        display={"flex"}
+        width={"100%"}
+        justifyContent={"center"}
+        flexDirection={"column"}
+        alignContent={"center"}
+        margin={"auto 0"}
+      >
+        <Container sx={{ width: "50%" }}>
+          <Card>
+            <Container
+              sx={{
+                width: "160px",
+                height: "160px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                padding: 12,
+              }}
+            >
+              <Avatar
+                image="/static/images/cards/contemplative-reptile.jpg"
+                title="green iguana"
+                src={profile.picture}
+                alt="user image"
+                sx={{ width: 150, height: 150 }}
+              />
+            </Container>
+            <CardContent>
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                textAlign={"center"}
               >
-                <Avatar
-                  image="/static/images/cards/contemplative-reptile.jpg"
-                  title="green iguana"
-                  src={profile.picture}
-                  alt="user image"
-                  sx={{ width: 150, height: 150 }}
-                />
-              </Container>
-              <CardContent>
-                <Typography
-                  gutterBottom
-                  variant="h5"
-                  component="div"
-                  textAlign={"center"}
-                >
-                  {profile.name}
-                </Typography>
-                {rows.map(
-                  (row) =>
-                    row.value && (
-                      <Box key={row.id} display="flex" alignItems="center">
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          width="120px"
-                        >
-                          {row.name}
-                        </Typography>
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ offset: "3" }}
-                        >
-                          {row.value}
-                        </Typography>
-                      </Box>
-                    )
-                )}
-              </CardContent>
-            </Card>
-          </Container>
-        </Box>
-      ) : (
-        <UserLogin setUser={setUser} />
-      )}
+                {profile.name}
+              </Typography>
+              {rows.map(
+                (row) =>
+                  row.value && (
+                    <Box key={row.id} display="flex" alignItems="center">
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        width="120px"
+                      >
+                        {row.name}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ offset: "3" }}
+                      >
+                        {row.value}
+                      </Typography>
+                    </Box>
+                  )
+              )}
+            </CardContent>
+          </Card>
+        </Container>
+      </Box>
     </>
   );
 };

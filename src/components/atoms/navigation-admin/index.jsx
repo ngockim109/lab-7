@@ -22,8 +22,9 @@ import PropTypes from "prop-types";
 import logo from "../../../assets/images/logo.webp";
 import { useTheme } from "@emotion/react";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../../../hooks/useAuth";
 const navLinks = [
-  { id: "1", title: "Home", href: "/movie-management" },
+  { id: "1", title: "Home", href: "/" },
   { id: "2", title: "Movies", href: "/admin-movies" },
   { id: "3", title: "News", href: "/admin-news" },
   { id: "4", title: "About Us", href: "/admin-about-us" },
@@ -70,15 +71,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 export default function NavigationAdmin({ theme, changeTheme }) {
-  const [authenticated, setauthenticated] = React.useState(null);
+  const { auth, setAuth } = useAuth();
   const navigate = useNavigate();
-  React.useEffect(() => {
-    const loggedInUser = localStorage.getItem("authenticated");
-    if (loggedInUser) {
-      console.log(loggedInUser);
-      setauthenticated(loggedInUser);
-    }
-  }, []);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -87,7 +81,7 @@ export default function NavigationAdmin({ theme, changeTheme }) {
 
   const themeNav = useTheme();
   const handleLogout = () => {
-    setauthenticated(false);
+    setAuth({});
     navigate("/login");
   };
   const handleProfileMenuOpen = (event) => {
@@ -126,7 +120,7 @@ export default function NavigationAdmin({ theme, changeTheme }) {
   };
 
   const menuId = "primary-search-account-menu";
-  const renderMenu = authenticated ? (
+  const renderMenu = auth?.email ? (
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
