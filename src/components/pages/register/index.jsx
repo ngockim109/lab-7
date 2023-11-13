@@ -4,17 +4,31 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import api from "../../../config/api";
 import {
+  Alert,
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   Paper,
+  Snackbar,
   TextField,
   Typography,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 const Register = () => {
   const [openSuccess, setOpenSuccess] = React.useState(false);
+  const [openError, setOpenError] = React.useState(false);
+  const [errMsg, setErrorMsg] = React.useState(false);
+  const navigate = useNavigate();
   const handleCloseSuccess = () => {
     setOpenSuccess(false);
+  };
+  const handleCloseError = () => {
+    setOpenError(false);
   };
   const formik = useFormik({
     initialValues: {
@@ -23,16 +37,37 @@ const Register = () => {
       picture: "",
       firstName: "",
       lastName: "",
-      birthDay: "",
+      role: "user",
     },
 
     onSubmit: async (values) => {
       try {
-        const response = await api.post("/users", values);
-        if (response.status === 200) {
-          setOpenSuccess(true);
+        console.log(values);
+        const users = await api.get("/users");
+        if (users.status === 200) {
+          console.log(users);
+          const isTrue = users.data.some((element) => {
+            console.log(element.email);
+            console.log(values.email);
+            if (element.email === values.email) {
+              return true;
+            }
+            return false;
+          });
+          console.log(isTrue);
+          if (!isTrue) {
+            const response = await api.post("/users", values);
+            console.log(response);
+            if (response.status === 201) {
+              setOpenSuccess(true);
+            }
+          } else {
+            setOpenError(true);
+            setErrorMsg("Email is already exist!");
+          }
         }
       } catch (e) {
+        setErrorMsg(e);
         console.log(e);
       }
     },
@@ -56,7 +91,6 @@ const Register = () => {
       password: Yup.string()
         .required("Required.")
         .typeError("Please enter a password"),
-      birthDay: Yup.date().typeError("Please a date"),
     }),
   });
   const textFields = [
@@ -103,15 +137,18 @@ const Register = () => {
     },
     {
       id: "5",
-      label: "birthDay",
-      name: "birthDay",
-      value: formik.values.birthDay,
+      label: "Avatar",
+      name: "picture",
+      value: formik.values.picture,
       onChange: formik.handleChange,
-      errorType: formik.errors.birthDay,
-      errorName: formik.errors.birthDay,
+      errorType: formik.errors.picture,
+      errorName: formik.errors.picture,
       defaultValue: "",
     },
   ];
+  const logIn = () => {
+    navigate("/login");
+  };
   return (
     <Box display={"flex"} justifyContent={"center"} sx={{ margin: "auto 0" }}>
       <Container sx={{ width: "50%" }}>
@@ -127,7 +164,7 @@ const Register = () => {
           </Typography>
           <form onSubmit={formik.handleSubmit}>
             {textFields.map((item) => (
-              <>
+              <div key={item.id}>
                 <TextField
                   label={item.label}
                   name={item.name}
@@ -138,21 +175,56 @@ const Register = () => {
                   value={formik.values.name}
                   onChange={formik.handleChange}
                   sx={{ marginBottom: "10px" }}
-                  key={item.id}
                 />
                 {item.errorType && (
                   <Typography variant="caption" color="red">
                     {item.errorName}
                   </Typography>
                 )}
-              </>
+              </div>
             ))}
-            <Box sx={{ display: "flex", justifyContent: "end" }}>
-              <Button type="submit">Save</Button>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Button type="submit" variant="contained">
+                Save
+              </Button>
             </Box>
           </form>
         </Paper>
       </Container>
+      <Dialog
+        open={openSuccess}
+        onClose={handleCloseSuccess}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Register successfully!"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Login to discover more about Streamo!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={logIn} autoFocus variant="contained">
+            Login here
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Snackbar
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        open={openError}
+        onClose={handleCloseError}
+        message={errMsg}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
+          {errMsg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

@@ -3,6 +3,7 @@ import useRefreshToken from "../../../hooks/useRefreshToken";
 import useAuth from "../../../hooks/useAuth";
 import { Outlet } from "react-router-dom";
 import useLocalStorage from "../../../hooks/useLocalStorage";
+import { CircularProgress } from "@mui/material";
 
 const PersistLogin = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -32,7 +33,7 @@ const PersistLogin = () => {
     console.log(`isLoading: ${isLoading}`);
   }, [isLoading]);
   return (
-    <>{!persist ? <Outlet /> : isLoading ? <p>Loading...</p> : <Outlet />}</>
+    <>{!persist ? <Outlet /> : isLoading ? <CircularProgress /> : <Outlet />}</>
   );
 };
 

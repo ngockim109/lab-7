@@ -51,9 +51,11 @@ const UserProfile = ({ user, setUser }) => {
     { id: "1", name: "Email", value: profile.email },
     { id: "2", name: "Given Name", value: profile.given_name },
     { id: "3", name: "Family Name", value: profile.family_name },
-    { id: "4", name: "Hd", value: profile.hd },
-    { id: "5", name: "Locale", value: profile.locale },
-    { id: "6", name: "Role", value: profile.role },
+    { id: "4", name: "Family Name", value: profile.firstName },
+    { id: "5", name: "Family Name", value: profile.lastName },
+    { id: "6", name: "Hd", value: profile.hd },
+    { id: "7", name: "Locale", value: profile.locale },
+    { id: "8", name: "Role", value: profile.role },
   ];
   return (
     <>
